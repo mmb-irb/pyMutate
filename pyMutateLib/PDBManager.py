@@ -13,7 +13,7 @@ MODELS_MAXRMS=5.0
 class PDBManager():
     def __init__(self,args):
         self.useChains=False
-        self.models=''
+        self.models=args.useModels
         
     def loadStructure(self, pdb_path, debug=False):
         if "pdb:"in pdb_path:
@@ -26,7 +26,7 @@ class PDBManager():
                 self.useChains=True
                 self.format='cif'
             except IOError:
-                print ("#ERROR: fetching PDB "+pdb_path, sys.stderr)
+                print ("#ERROR: fetching PDB "+ pdb_path, file=sys.stderr)
                 sys.exit(2)
         else:
             self.pdb_path = pdb_path
@@ -37,13 +37,13 @@ class PDBManager():
                 self.parser = MMCIFParser()
                 self.format='cif'
             else:
-                print ('#ERROR: unknown filetype', sys.stderr)
+                print ('#ERROR: unknown filetype', file=sys.stderr)
                 sys.exit(2)
 
         try:
             st = self.parser.get_structure('st', self.pdb_path)
         except OSError:
-            print ("#ERROR: parsing PDB", sys.stderr)
+            print ("#ERROR: parsing PDB", file=sys.stderr)
             sys.exit(2)
         #====== Internal residue renumbering =========================================
         i=1
@@ -63,13 +63,14 @@ class PDBManager():
         for at in st[0].get_atoms():
             self.numAts=self.numAts+1
         #checking models
-        if len(st) > 1:
+        if len(st) > 1 and self.models=='auto':
             if debug:
                 print ("#DEBUG: Found "+str(len(st))+" models")
+                print ("#DEBUG: RMS " + self.calcRMSdAll(st[0],st[1]))
             if self.calcRMSdAll(st[0],st[1]) < MODELS_MAXRMS:
                 if debug:
                     print ("#DEBUG: Models look like alternative conformations, will consider only one")
-                self.models='alt'
+                self.models='alt'                
         return st
 
     def calcRMSdAll (self, st1,st2):
@@ -93,5 +94,5 @@ class PDBManager():
         try:
             pdbio.save(output_path)
         except OSError:
-            print ("#ERROR: unable to save PDB data on "+ output_path, sys.stderr)
+            print ("#ERROR: unable to save PDB data on "+ output_path, file=sys.stderr)
             

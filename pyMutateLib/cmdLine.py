@@ -59,4 +59,6 @@ class cmdLine():
         print ('#ARGS: output_pdb_path:', args.output_pdb_path)
         print ('#ARGS: pdb_id:', args.id)
         print ('#ARGS: Use PDB Models:', args.useModels)
+        if args.debug:
+            print ('#ARGS: DEBUG mode on')
         print()

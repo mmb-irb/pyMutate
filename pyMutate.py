@@ -29,10 +29,43 @@ if __name__ == "__main__":
     print ('#HEADER')
     cmdline.printArgs(args)
     
+    #Chekcing models
+    if len(st) > 1:
+        if args.useModels == 'no':
+            print ("#WARNING: Input Structure contains models, but using only first one due to useModels settings")
+            args.useModels = False
+        elif args.useModels == 'auto':
+            if pdbIo.models =='alt':
+                print ("#WARNING: Input Structure contains models, but they look as NMR models, using the first one (override with force)")
+                args.useModels = False
+            else:
+                args.useModels = True
+        elif args.useModels=='force':             
+            if pdbIo.models=='alt':
+                print ('#WARNING: Models found look like NMR models, but using all due to useModels = force')
+                args.useModels=True
+        else:
+            print ("#ERROR: unknown useModels option")
+        if not args.useModels:
+            print ("#INFO:removing models")
+            ids=[]
+            for md in st.get_models():
+                ids.append(md.id)
+            for i in range(1,len(ids)):
+                st.detach_child(ids[i])
+            args.useModels=False
+    else:
+        args.useModels=False
+        
 #=============================================================================
 # Do Something
-
-
+    muts = pyMutateLib.mutationManager()
+    muts.loadMutationList(args.mutationList, args.debug)
+    
+    muts.checkMutations(st)
+    
+    for mut in muts.mutList:
+        st = mut.apply(st)
 #=============================================================================
     pdbIo.saveStructure(st,args.output_pdb_path)
 
