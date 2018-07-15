@@ -94,7 +94,7 @@ class Mutation():
             sys.exit(1)
         return self
     
-    def apply(self, st, map, debug=False):
+    def apply(self, st, map, resLib, debug=False):
         if debug:
             print (self.mutList)
             print ("#DEBUG: Mutation Rules")
@@ -120,8 +120,9 @@ class Mutation():
 #TODO
             for atid in map.getRules(self.oldid,self.newid,'Add'):
                 print ("  Adding Fake atom "+ atid)
-                at = Atom(atid, [0.0,0.0,0.0], 0.0, 1.0, ' ', ' '+atid+' ', 0, atid[0:1])
+                at = Atom(atid, _buildCoords(res,resLib,self.newid,atid), 0.0, 1.0, ' ', ' '+atid+' ', 0, atid[0:1])
                 res.add(at)
+                
 #Renaming residue
             res.resname=self.newid
             print ("")
@@ -146,3 +147,22 @@ def _residueCheck(r):
        print ('#ERROR: unknown residue id ' + r)
        sys.exit(1)
     return resid
+
+def _buildCoords(res,resLib,newres,atid):
+    residDef = resLib.residues[newres]
+    i=1
+    while residDef.ats[i].id != atid and i<len(residDef.ats):
+        i=i+1
+    if residDef.ats[i].id == atid:
+        print (i)
+        print (vars(residDef.ats[i]))
+        print (residDef.ats[residDef.ats[i].link0],residDef.ats[i].d)
+        print (residDef.ats[residDef.ats[i].link1],residDef.ats[i].a)
+        print (residDef.ats[residDef.ats[i].link2],residDef.ats[i].dh)
+    else:
+        print ("#ERROR: Unknown target atom")
+        sys.exit(1)
+        
+    return [0.,0.,0.]
+    
+    

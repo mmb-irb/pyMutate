@@ -62,11 +62,13 @@ if __name__ == "__main__":
     muts = pyMutateLib.mutationManager()
     muts.loadMutationList(args.mutationList, args.debug)
     
+    resLib = pyMutateLib.ResidueLib(args.residueLib)
+    
     muts.checkMutations(st, args.debug)
     mutMap = pyMutateLib.MutationMap(args.mutationMap)
     
     for mut in muts.mutList:
-        mut.apply(st,mutMap,args.debug)
+        mut.apply(st, mutMap, resLib, args.debug)
 #=============================================================================
     pdbIo.saveStructure(st,args.output_pdb_path)
     print ("Done")

@@ -32,12 +32,16 @@ class cmdLine():
             help='List of mutations ( [chain:]OldresIdNumNewResID as in A:Arg232Gln, no chain or * for all chains )',
         )
         
-        self.argparser.add_argument('output_pdb_path',
-            help='Output PDB File'
-        )
-        
         self.argparser.add_argument('mutationMap',
             help='Mutation rules'
+        )
+        
+        self.argparser.add_argument('residueLib',
+            help='Residue Lib'
+        )
+        
+        self.argparser.add_argument('output_pdb_path',
+            help='Output PDB File'
         )
         
 

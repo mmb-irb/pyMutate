@@ -1408,7 +1408,7 @@
                     },
                     "THR": {
                         "Mov": ["CG-CG2"],
-                        "Del": ["CD OE1 NE2"],
+                        "Del": ["CD","OE1","NE2"],
                         "Add": ["OG1"]
                     },
                     "VAL": {
