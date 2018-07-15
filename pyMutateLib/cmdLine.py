@@ -9,12 +9,6 @@ class cmdLine():
         )
 
         self.argparser.add_argument(
-            '--id',
-            action='store',
-            dest='id',
-            help='PDB Id (for output)'
-        )
-        self.argparser.add_argument(
             '--debug', '-d',
             action='store_true',
             dest='debug',
@@ -42,6 +36,10 @@ class cmdLine():
             help='Output PDB File'
         )
         
+        self.argparser.add_argument('mutationMap',
+            help='Mutation rules'
+        )
+        
 
 
     def parse_args(self):    
@@ -52,13 +50,12 @@ class cmdLine():
         return args
 
     def printArgs(self,args):
-        print ('#ARGS: Arguments list')
-        print ('#ARGS: ==============')
-        print ('#ARGS: pdb_path:', args.pdb_path)
-        print ('#ARGS: mutations:', args.mutationList)
-        print ('#ARGS: output_pdb_path:', args.output_pdb_path)
-        print ('#ARGS: pdb_id:', args.id)
-        print ('#ARGS: Use PDB Models:', args.useModels)
+        print ('Arguments list')
+        print ('==============')
+        print (' pdb_path:       ', args.pdb_path)
+        print (' mutations:      ', args.mutationList)
+        print (' output_pdb_path:', args.output_pdb_path)
+        print (' Use PDB Models: ', args.useModels)
         if args.debug:
-            print ('#ARGS: DEBUG mode on')
+            print (' DEBUG mode on')
         print()

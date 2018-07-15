@@ -39,10 +39,10 @@ class mutationManager():
         #convert to list of mut objects
             self.idList = list(map (lambda x: Mutation(x) , self.idList))
         
-    def checkMutations (self, st, stop_on_error=True):
+    def checkMutations (self, st, debug=False, stop_on_error=True):
         self.mutList=[]
         for mut in self.idList:
-            self.mutList.append(mut.check(st, stop_on_error))        
+            self.mutList.append(mut.check(st, debug, stop_on_error))        
     
     def __str__(self):
        return ','.join(self.list)
@@ -60,8 +60,9 @@ class Mutation():
         self.resNum = mutcomps.group(2)
         self.id = self.chain + ":" + self.oldid + self.resNum + self.newid        
     
-    def check (self, st, stop_on_error=True): # Check which mutations are possible
-        print ('#DEBUG: Checking '+ self.id)
+    def check (self, st, debug=False, stop_on_error=True): # Check which mutations are possible
+        if debug:
+            print ('#DEBUG: Checking '+ self.id)
         self.mutList=[]
         ok=0
         for model in st.get_models():
@@ -92,14 +93,43 @@ class Mutation():
             sys.exit(1)
         return self
     
-    def apply(self, st):
-        print (self.mutList)
+    def apply(self, st, map, debug=False):
+        if debug:
+            print (self.mutList)
+            print ("#DEBUG: Mutation Rules")
+            print (map.map[self.oldid][self.newid])
+        for m in self.mutList:
+            res = st[m['model']][m['chain']][m['residue']]
+            print ("Replacing " + _residueid(res) + " to " + self.newid)
+# Renaming ats
+            for r in map.getRules(self.oldid,self.newid, 'Mov'):
+                [oldat,newat]=r.split("-")
+                print ("  Renaming "+ oldat + " to " + newat)
+                for at in res.get_atoms():
+                    if at.id == oldat:
+                        at.id = newat
+                        at.element = newat[0:1]
+                        at.fullname=' ' + newat
+                        
+                        
+# delete atoms  
+            for atid in map.getRules(self.oldid,self.newid,'Del'):
+                print ("  Deleting "+ atid)
+                res.detach_child(atid)
+#Adding atoms
+#TODO
+#Renaming residue
+            res.resname=self.newid
+            print ("")
         
-        return st
+        
+        
                 
     def __str__(self):
         return self.id
 
+def _residueid(res):
+    return res.get_resname() + " " +str(res.get_parent().id) +  str(res.id[1]) +"/"+ str(res.get_parent().get_parent().id)
 
 def _residueCheck(r):
     r=r.upper()

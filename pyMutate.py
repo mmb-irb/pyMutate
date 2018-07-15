@@ -19,14 +19,14 @@ if __name__ == "__main__":
     
     st=pdbIo.loadStructure(args.pdb_path, args.debug)
     
-    if not hasattr(args,'id') and hasattr(loader,'id'):
+    if not hasattr(args,'id') and hasattr(pdbIo,'id'):
         args.id = pdbIo.id
     args.format = pdbIo.format
     
-    print ('#HEADER')
-    print ('#HEADER Simple side-chain mutation utility')
-    print ('#HEADER J.L Gelpi 2018')
-    print ('#HEADER')
+    print ('')
+    print ('     Simple side-chain mutation utility')
+    print ('             J.L Gelpi 2018')
+    print ('')
     cmdline.printArgs(args)
     
     #Chekcing models
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         else:
             print ("#ERROR: unknown useModels option")
         if not args.useModels:
-            print ("#INFO:removing models")
+            print ("Removing models")
             ids=[]
             for md in st.get_models():
                 ids.append(md.id)
@@ -62,10 +62,12 @@ if __name__ == "__main__":
     muts = pyMutateLib.mutationManager()
     muts.loadMutationList(args.mutationList, args.debug)
     
-    muts.checkMutations(st)
+    muts.checkMutations(st, args.debug)
+    mutMap = pyMutateLib.MutationMap(args.mutationMap)
     
     for mut in muts.mutList:
-        st = mut.apply(st)
+        mut.apply(st,mutMap,args.debug)
 #=============================================================================
     pdbIo.saveStructure(st,args.output_pdb_path)
+    print ("Done")
 
