@@ -122,7 +122,6 @@ class Mutation():
                 print ("  Adding Fake atom "+ atid)
                 at = Atom(atid, [0.0,0.0,0.0], 0.0, 1.0, ' ', ' '+atid+' ', 0, atid[0:1])
                 res.add(at)
-
 #Renaming residue
             res.resname=self.newid
             print ("")
