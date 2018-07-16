@@ -128,14 +128,15 @@ class Mutation():
 #TODO
             for atid in map.getRules(res.get_resname(),self.newid,'Add'):
                 print ("  Adding new atom "+ atid)
-                at = Atom(atid, _buildCoords(res,resLib,self.newid,atid), 99.0, 1.0, ' ', ' '+atid+' ', 0, atid[0:1])
+                if atid == 'CB':
+                    at = Atom(atid, _buildCoordsCB(res), 99.0, 1.0, ' ', ' '+atid+' ', 0, atid[0:1])
+                else:
+                    at = Atom(atid, _buildCoordsOther(res,resLib,self.newid,atid), 99.0, 1.0, ' ', ' '+atid+' ', 0, atid[0:1])
                 res.add(at)
                 
 #Renaming residue
             res.resname=self.newid
             print ("")
-        
-        
         
                 
     def __str__(self):
@@ -156,57 +157,65 @@ def _residueCheck(r):
        sys.exit(1)
     return resid
 
-def _buildCoords(res, resLib, newres,atid):
-    print (res.get_list())            
-    print (res.child_dict.keys())
+def _buildCoordsOther(res, resLib, newres,atid):
+#    print (res.get_list())            
+#    print (res.child_dict.keys())
     residDef = resLib.residues[newres]
     i=1
     while residDef.ats[i].id != atid and i<len(residDef.ats):
         i=i+1
     if residDef.ats[i].id == atid:
-        print (i)
-        print (vars(residDef.ats[i]))
-        print (residDef.ats[residDef.ats[i].link[0]].id)
-        print (residDef.ats[residDef.ats[i].link[1]].id)
-        print (residDef.ats[residDef.ats[i].link[2]].id)
-        print (residDef.ats[residDef.ats[i].link[0]],residDef.ats[i].geom[0],res[residDef.ats[residDef.ats[i].link[0]].id].get_coord())
-        print (residDef.ats[residDef.ats[i].link[1]],residDef.ats[i].geom[1],res[residDef.ats[residDef.ats[i].link[1]].id].get_coord())
-        print (residDef.ats[residDef.ats[i].link[2]],residDef.ats[i].geom[2],res[residDef.ats[residDef.ats[i].link[2]].id].get_coord())
-
-        # Internal to cartisian From QCL
-        
-        avec = res[residDef.ats[residDef.ats[i].link[0]].id].get_coord()
-        bvec = res[residDef.ats[residDef.ats[i].link[1]].id].get_coord()
-        cvec = res[residDef.ats[residDef.ats[i].link[2]].id].get_coord()
-
-        dst = residDef.ats[i].geom[0]
-        ang = residDef.ats[i].geom[1] * pi / 180.
-        tor = residDef.ats[i].geom[2] * pi / 180.0
-
-        v1= avec-bvec
-        v2= avec-cvec
-
-        n = np.cross(v1,v2)
-        nn = np.cross(v1,n)
-
-        n /= norm(n)
-        nn /= norm(nn)
-
-        n *= -sin(tor)
-        nn *= cos(tor)
-
-        v3 = n + nn
-        v3 /= norm(v3)
-        v3 *= dst * sin(ang)
-
-        v1 /= norm(v1)
-        v1 *= dst * cos(ang)
-
-        return avec + v3 - v1
-    
+#        print (i)
+#        print (vars(residDef.ats[i]))
+#        print (residDef.ats[residDef.ats[i].link[0]].id)
+#        print (residDef.ats[residDef.ats[i].link[1]].id)
+#        print (residDef.ats[residDef.ats[i].link[2]].id)
+#        print (residDef.ats[residDef.ats[i].link[0]],residDef.ats[i].geom[0],res[residDef.ats[residDef.ats[i].link[0]].id].get_coord())
+#        print (residDef.ats[residDef.ats[i].link[1]],residDef.ats[i].geom[1],res[residDef.ats[residDef.ats[i].link[1]].id].get_coord())
+#        print (residDef.ats[residDef.ats[i].link[2]],residDef.ats[i].geom[2],res[residDef.ats[residDef.ats[i].link[2]].id].get_coord())
+        return _buildCoords(
+            res[residDef.ats[residDef.ats[i].link[0]].id].get_coord(),
+            res[residDef.ats[residDef.ats[i].link[1]].id].get_coord(), 
+            res[residDef.ats[residDef.ats[i].link[2]].id].get_coord(),
+            residDef.ats[i].geom
+            )
     else:
         print ("#ERROR: Unknown target atom")
         sys.exit(1)
-        
+
+def _buildCoordsCB(res): # Get CB from Backbone
+    return _buildCoords(
+        res['CA'].get_coord(),
+        res['N'].get_coord(),
+        res['C'].get_coord(),
+        [1.5, 115.5, -123.]
+        )
+
+            
+def _buildCoords(avec,bvec,cvec,geom):
+    dst = geom[0]
+    ang = geom[1] * pi / 180.
+    tor = geom[2] * pi / 180.0
+
+    v1= avec-bvec
+    v2= avec-cvec
+
+    n = np.cross(v1,v2)
+    nn = np.cross(v1,n)
+
+    n /= norm(n)
+    nn /= norm(nn)
+
+    n *= -sin(tor)
+    nn *= cos(tor)
+
+    v3 = n + nn
+    v3 /= norm(v3)
+    v3 *= dst * sin(ang)
+
+    v1 /= norm(v1)
+    v1 *= dst * cos(ang)
+
+    return avec + v3 - v1
     
     

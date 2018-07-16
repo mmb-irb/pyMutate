@@ -67,7 +67,6 @@ class cmdLine():
 
     def parse_args(self):    
         args = self.argparser.parse_args()
-        print (args)
         if not args.pdb_path:
             self.argparser.print_help()
             sys.exit(2)
