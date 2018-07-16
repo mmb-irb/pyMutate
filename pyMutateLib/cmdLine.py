@@ -1,5 +1,10 @@
 
 import argparse
+import sys
+
+homeDir="/home/gelpi/data/DEVEL/BioExcel/pyMutate"
+resLibFile = homeDir + '/dat/all_amino03.in'
+mutMapFile = homeDir + '/dat/pyMutateData.json'
 
 class cmdLine():
     def __init__(self, defaults=[]):
@@ -23,33 +28,48 @@ class cmdLine():
             default='auto'
         )
     
-        self.argparser.add_argument('pdb_path',
+        self.argparser.add_argument(
+            '-i',
+            action='store',
+            dest='pdb_path',
             help='PDB File | pdb:pdbId'
         )
         
         self.argparser.add_argument(
-            'mutationList',
-            help='List of mutations ( [chain:]OldresIdNumNewResID as in A:Arg232Gln, no chain or * for all chains )',
+            '-m',
+            action='store',
+            dest = 'mutationList',
+            help='List of mutations ([chain:]OldIdNumNewId as in A:Arg232Gln, no chain or * for all chains ) | file:file_path ',
         )
         
-        self.argparser.add_argument('mutationMap',
-            help='Mutation rules'
+        self.argparser.add_argument(
+            '--map',
+            action='store',
+            dest='mutationMap',
+            help='Mutation rules',
+            default=mutMapFile
         )
         
-        self.argparser.add_argument('residueLib',
-            help='Residue Lib'
+        self.argparser.add_argument(
+            '--rlib',
+            action='store',
+            dest='residueLib',
+            help='Residue Lib (amber prep format)',
+            default=resLibFile
         )
         
-        self.argparser.add_argument('output_pdb_path',
+        self.argparser.add_argument(
+            '-o',
+            action='store',
+            dest='output_pdb_path',
             help='Output PDB File'
         )
-        
-
 
     def parse_args(self):    
         args = self.argparser.parse_args()
+        print (args)
         if not args.pdb_path:
-            argparser.print_help()
+            self.argparser.print_help()
             sys.exit(2)
         return args
 
@@ -60,6 +80,8 @@ class cmdLine():
         print (' mutations:      ', args.mutationList)
         print (' output_pdb_path:', args.output_pdb_path)
         print (' Use PDB Models: ', args.useModels)
+        print (' Mutation Rules: ', args.mutationMap)
+        print (' Residue Library:', args.residueLib)
         if args.debug:
             print (' DEBUG mode on')
         print()

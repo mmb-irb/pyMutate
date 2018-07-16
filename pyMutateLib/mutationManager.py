@@ -28,6 +28,7 @@ class mutationManager():
         self.mutList=[]
 
     def loadMutationList(self,idList,debug=False):
+        self.idList=[]
         if 'file:' in idList:
             #Load from file
             idList = idList.replace ('file:','')
@@ -36,9 +37,10 @@ class mutationManager():
                 self.idList.append(line)
             self.idList = list(map (lambda x: x.replace('\n','').replace('\r',''), self.idList))
         else:
-            self.idList=idList.split(',')
+            self.idList=idList.replace(' ','').split(',')
         #convert to list of mut objects
-            self.idList = list(map (lambda x: Mutation(x) , self.idList))
+        self.idList = list(map (lambda x: Mutation(x) , self.idList))
+        
         
     def checkMutations (self, st, debug=False, stop_on_error=True):
         self.mutList=[]
@@ -103,7 +105,7 @@ class Mutation():
             res = st[m['model']][m['chain']][m['residue']]
             print ("Replacing " + _residueid(res) + " to " + self.newid)
 # Renaming ats
-            for r in map.getRules(self.oldid,self.newid, 'Mov'):
+            for r in map.getRules(res.get_resname(),self.newid, 'Mov'):
                 [oldat,newat]=r.split("-")
                 print ("  Renaming "+ oldat + " to " + newat)
                 for at in res.get_atoms():
@@ -113,12 +115,12 @@ class Mutation():
                         at.fullname=' ' + newat
                         
 # delete atoms  
-            for atid in map.getRules(self.oldid,self.newid,'Del'):
+            for atid in map.getRules(res.get_resname(),self.newid,'Del'):
                 print ("  Deleting "+ atid)
                 res.detach_child(atid)
 #Adding atoms
 #TODO
-            for atid in map.getRules(self.oldid,self.newid,'Add'):
+            for atid in map.getRules(res.get_resname(),self.newid,'Add'):
                 print ("  Adding Fake atom "+ atid)
                 at = Atom(atid, _buildCoords(res,resLib,self.newid,atid), 0.0, 1.0, ' ', ' '+atid+' ', 0, atid[0:1])
                 res.add(at)
