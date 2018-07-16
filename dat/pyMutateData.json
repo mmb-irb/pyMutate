@@ -354,8 +354,8 @@
                         "Mov": []
                     },
                     "LEU": {
-                        "Mov": ["CD", "CD1"],
-                        "Del": ["OE1 OE2"],
+                        "Mov": ["CD-CD1"],
+                        "Del": ["OE1","OE2"],
                         "Add": ["CD2"]
                     },
                     "MET": {
@@ -1372,8 +1372,8 @@
                         "Mov": []
                     },
                     "LEU": {
-                        "Mov": ["CD", "CD1"],
-                        "Del": ["OE1 NE2"],
+                        "Mov": ["CD-CD1"],
+                        "Del": ["OE1","NE2"],
                         "Add": ["CD2"]
                     },
                     "MET": {
