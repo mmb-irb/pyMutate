@@ -5,6 +5,10 @@
 import re
 import sys
 from Bio.PDB.Atom import Atom
+import math
+from numpy import sin, cos, pi
+from numpy.linalg import norm
+import numpy as np
 
 oneLetterResidueCode = {
         'ALA':'A', 'CYS':'C', 'ASP':'D', 'GLU':'E', 'PHE':'F', 'GLY':'G',
@@ -110,9 +114,11 @@ class Mutation():
                 print ("  Renaming "+ oldat + " to " + newat)
                 for at in res.get_atoms():
                     if at.id == oldat:
+                        res.detach_child(at.id)
                         at.id = newat
                         at.element = newat[0:1]
                         at.fullname=' ' + newat
+                        res.add(at)
                         
 # delete atoms  
             for atid in map.getRules(res.get_resname(),self.newid,'Del'):
@@ -121,8 +127,8 @@ class Mutation():
 #Adding atoms
 #TODO
             for atid in map.getRules(res.get_resname(),self.newid,'Add'):
-                print ("  Adding Fake atom "+ atid)
-                at = Atom(atid, _buildCoords(res,resLib,self.newid,atid), 0.0, 1.0, ' ', ' '+atid+' ', 0, atid[0:1])
+                print ("  Adding new atom "+ atid)
+                at = Atom(atid, _buildCoords(res,resLib,self.newid,atid), 99.0, 1.0, ' ', ' '+atid+' ', 0, atid[0:1])
                 res.add(at)
                 
 #Renaming residue
@@ -150,7 +156,9 @@ def _residueCheck(r):
        sys.exit(1)
     return resid
 
-def _buildCoords(res,resLib,newres,atid):
+def _buildCoords(res, resLib, newres,atid):
+    print (res.get_list())            
+    print (res.child_dict.keys())
     residDef = resLib.residues[newres]
     i=1
     while residDef.ats[i].id != atid and i<len(residDef.ats):
@@ -158,13 +166,47 @@ def _buildCoords(res,resLib,newres,atid):
     if residDef.ats[i].id == atid:
         print (i)
         print (vars(residDef.ats[i]))
-        print (residDef.ats[residDef.ats[i].link0],residDef.ats[i].d)
-        print (residDef.ats[residDef.ats[i].link1],residDef.ats[i].a)
-        print (residDef.ats[residDef.ats[i].link2],residDef.ats[i].dh)
+        print (residDef.ats[residDef.ats[i].link[0]].id)
+        print (residDef.ats[residDef.ats[i].link[1]].id)
+        print (residDef.ats[residDef.ats[i].link[2]].id)
+        print (residDef.ats[residDef.ats[i].link[0]],residDef.ats[i].geom[0],res[residDef.ats[residDef.ats[i].link[0]].id].get_coord())
+        print (residDef.ats[residDef.ats[i].link[1]],residDef.ats[i].geom[1],res[residDef.ats[residDef.ats[i].link[1]].id].get_coord())
+        print (residDef.ats[residDef.ats[i].link[2]],residDef.ats[i].geom[2],res[residDef.ats[residDef.ats[i].link[2]].id].get_coord())
+
+        # Internal to cartisian From QCL
+        
+        avec = res[residDef.ats[residDef.ats[i].link[0]].id].get_coord()
+        bvec = res[residDef.ats[residDef.ats[i].link[1]].id].get_coord()
+        cvec = res[residDef.ats[residDef.ats[i].link[2]].id].get_coord()
+
+        dst = residDef.ats[i].geom[0]
+        ang = residDef.ats[i].geom[1] * pi / 180.
+        tor = residDef.ats[i].geom[2] * pi / 180.0
+
+        v1= avec-bvec
+        v2= avec-cvec
+
+        n = np.cross(v1,v2)
+        nn = np.cross(v1,n)
+
+        n /= norm(n)
+        nn /= norm(nn)
+
+        n *= -sin(tor)
+        nn *= cos(tor)
+
+        v3 = n + nn
+        v3 /= norm(v3)
+        v3 *= dst * sin(ang)
+
+        v1 /= norm(v1)
+        v1 *= dst * cos(ang)
+
+        return avec + v3 - v1
+    
     else:
         print ("#ERROR: Unknown target atom")
         sys.exit(1)
         
-    return [0.,0.,0.]
     
     

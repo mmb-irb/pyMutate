@@ -69,12 +69,9 @@ class AtomDef():
         self.id=data[1]
         self.type=data[2]
         self.branch=data[3]
-        self.link0=int(data[4])
-        self.link1=int(data[5])
-        self.link2=int(data[6])
-        self.d=float(data[7])        
-        self.a=float(data[8])
-        self.dh=float(data[9])
+        self.link=[int(data[4]), int(data[5]), int(data[6])]
+        self.geom=[float(data[7]), float(data[8]), float(data[9])]
+        self.coord=[[0.,0.,0.],[0.,0.,0.],[0.,0.,0.]]
         self.ch=float(data[10])
     def __str__(self):
         return self.id
