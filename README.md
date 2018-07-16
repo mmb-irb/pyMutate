@@ -1,4 +1,4 @@
-##pyMutate
+## pyMutate
 
 Simple replacement for scwrl to mutate side chains.
 -New CB atoms are built from backbone
