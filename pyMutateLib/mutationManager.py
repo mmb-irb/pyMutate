@@ -27,12 +27,10 @@ threeLetterResidueCode = {
 
 class mutationManager():
 
-    def __init__(self):
+    def __init__(self, idList, debug=False):
         self.idlist=[]
         self.mutList=[]
 
-    def loadMutationList(self,idList,debug=False):
-        self.idList=[]
         if 'file:' in idList:
             #Load from file
             idList = idList.replace ('file:','')
@@ -47,7 +45,6 @@ class mutationManager():
         
         
     def checkMutations (self, st, debug=False, stop_on_error=True):
-        self.mutList=[]
         for mut in self.idList:
             self.mutList.append(mut.check(st, debug, stop_on_error))        
     
@@ -59,12 +56,17 @@ class Mutation():
     def __init__(self, mutId):
         if ':' not in mutId:
             mutId = '*:'+mutId
+
         self.id = mutId.upper()
+        
         [self.chain, mut] = mutId.split(':')
+        
         mutcomps = re.match('([A-z]*)([0-9]*)([A-z]*)',mut)
+        
         self.oldid = _residueCheck(mutcomps.group(1))
         self.newid = _residueCheck(mutcomps.group(3))
         self.resNum = mutcomps.group(2)
+        
         self.id = self.chain + ":" + self.oldid + self.resNum + self.newid        
     
     def check (self, st, debug=False, stop_on_error=True): # Check which mutations are possible
@@ -120,11 +122,11 @@ class Mutation():
                         at.fullname=' ' + newat
                         res.add(at)
                         
-# delete atoms  
+# Deleting atoms  
             for atid in map.getRules(res.get_resname(),self.newid,'Del'):
                 print ("  Deleting "+ atid)
                 res.detach_child(atid)
-#Adding atoms
+# Adding atoms
             for atid in map.getRules(res.get_resname(),self.newid,'Add'):
                 print ("  Adding new atom "+ atid)
                 if atid == 'CB':
@@ -154,24 +156,16 @@ def _residueCheck(r):
     else:
        print ('#ERROR: unknown residue id ' + r)
        sys.exit(1)
+
     return resid
 
 def _buildCoordsOther(res, resLib, newres,atid):
-#    print (res.get_list())            
-#    print (res.child_dict.keys())
+
     residDef = resLib.residues[newres]
     i=1
     while residDef.ats[i].id != atid and i<len(residDef.ats):
         i=i+1
     if residDef.ats[i].id == atid:
-#        print (i)
-#        print (vars(residDef.ats[i]))
-#        print (residDef.ats[residDef.ats[i].link[0]].id)
-#        print (residDef.ats[residDef.ats[i].link[1]].id)
-#        print (residDef.ats[residDef.ats[i].link[2]].id)
-#        print (residDef.ats[residDef.ats[i].link[0]],residDef.ats[i].geom[0],res[residDef.ats[residDef.ats[i].link[0]].id].get_coord())
-#        print (residDef.ats[residDef.ats[i].link[1]],residDef.ats[i].geom[1],res[residDef.ats[residDef.ats[i].link[1]].id].get_coord())
-#        print (residDef.ats[residDef.ats[i].link[2]],residDef.ats[i].geom[2],res[residDef.ats[residDef.ats[i].link[2]].id].get_coord())
         return _buildCoords(
             res[residDef.ats[residDef.ats[i].link[0]].id].get_coord(),
             res[residDef.ats[residDef.ats[i].link[1]].id].get_coord(), 
@@ -183,6 +177,7 @@ def _buildCoordsOther(res, resLib, newres,atid):
         sys.exit(1)
 
 def _buildCoordsCB(res): # Get CB from Backbone
+
     return _buildCoords(
         res['CA'].get_coord(),
         res['N'].get_coord(),
@@ -192,6 +187,7 @@ def _buildCoordsCB(res): # Get CB from Backbone
 
             
 def _buildCoords(avec,bvec,cvec,geom):
+
     dst = geom[0]
     ang = geom[1] * pi / 180.
     tor = geom[2] * pi / 180.0
@@ -216,5 +212,3 @@ def _buildCoords(avec,bvec,cvec,geom):
     v1 *= dst * cos(ang)
 
     return avec + v3 - v1
-    
-    

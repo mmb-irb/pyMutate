@@ -27,8 +27,9 @@ class cmdLine():
         self.argparser.add_argument(
             '-i',
             action='store',
-            dest='pdb_path',
-            help='PDB File | pdb:pdbId'
+            dest='input_pdb_path',
+            help='PDB/mmCIF File | pdb:pdbId',
+            required=True
         )
         
         self.argparser.add_argument(
@@ -36,12 +37,13 @@ class cmdLine():
             action='store',
             dest = 'mutationList',
             help='List of mutations ([chain:]OldIdNumNewId as in A:Arg232Gln, no chain or * for all chains ) | file:file_path ',
+            required=True
         )
         
         self.argparser.add_argument(
             '--map',
             action='store',
-            dest='mutationMap',
+            dest='mutMapFile',
             help='Mutation rules',
             default=defaults['mutMapFile']
         )
@@ -49,7 +51,7 @@ class cmdLine():
         self.argparser.add_argument(
             '--rlib',
             action='store',
-            dest='residueLib',
+            dest='resLibFile',
             help='Residue Lib (amber prep format)',
             default=defaults['resLibFile']
         )
@@ -58,25 +60,22 @@ class cmdLine():
             '-o',
             action='store',
             dest='output_pdb_path',
-            help='Output PDB File'
+            help='Output PDB File',
+            required=True
         )
 
     def parse_args(self):    
         args = self.argparser.parse_args()
-        if not args.pdb_path:
-            self.argparser.print_help()
-            sys.exit(2)
         return args
 
     def printArgs(self,args):
-        print ('Arguments list')
-        print ('==============')
-        print (' pdb_path:       ', args.pdb_path)
+
+        print (' input_pdb_path: ', args.input_pdb_path)
         print (' mutations:      ', args.mutationList)
         print (' output_pdb_path:', args.output_pdb_path)
         print (' Use PDB Models: ', args.useModels)
-        print (' Mutation Rules: ', args.mutationMap)
-        print (' Residue Library:', args.residueLib)
+        print (' Mutation Rules: ', args.mutMapFile)
+        print (' Residue Library:', args.resLibFile)
         if args.debug:
             print (' DEBUG mode on')
         print()
