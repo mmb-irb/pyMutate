@@ -44,16 +44,16 @@ class pyMutate():
         print ("Done")
 
 def main():
-    if not 'pyMUTATEDIR' in os.environ:
+    if os.getenv('pyMUTATEDIR') == None:
         print ("WARNING: $pyMUTATEDIR not set")
         defaults={'resLibFile' : '', 'mutMapFile' : ''}
     else:
 # Default data
         defaults={
-            'resLibFile' : os.environ['pyMUTATEDIR'] + '/dat/all_amino03.in',
-            'mutMapFile' : os.environ['pyMUTATEDIR'] + '/dat/pyMutateData.json'
+            'resLibFile' : os.getenv('pyMUTATEDIR') + '/dat/all_amino03.in',
+            'mutMapFile' : os.getenv('pyMUTATEDIR') + '/dat/pyMutateData.json'
         }
-    
+
     cmdline = pyMutateLib.cmdLine(defaults)
     args = cmdline.parse_args()
 
