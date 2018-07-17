@@ -30,6 +30,7 @@ class pyMutate():
     def __init__(self,input_pdb_path, output_pdb_path, properties):
         self.input_pdb_path = input_pdb_path
         self.output_pdb_path = output_pdb_path
+        self.properties = properties
         self.global_log=properties.get('global_log', None)
         self.prefix=properties.get('prefix',None)
         self.step=properties.get('step', None)
@@ -41,8 +42,8 @@ class pyMutate():
     
     def launch(self):
         out_log, err_log = fu.get_logs(path=self.path, prefix=self.prefix, step=self.step)
-        
-        pdbIo = pyMutateLib.PDBManager(self.properties)
+
+        pdbIo = pyMutateLib.PDBManager(self.useModels)
      
         st=pdbIo.loadStructure(self.input_pdb_path)
         self.format = pdbIo.format
@@ -86,9 +87,9 @@ class pyMutate():
         mutMap = pyMutateLib.MutationMap(self.mutMap)
     
         for mut in muts.mutList:
-            mut.apply(st, mutMap, resLib, args.debug)
+            mut.apply(st, mutMap, resLib)
 #=============================================================================
-        out_log.info ("Writing modified structure to "+ output_pdb_path)
+        out_log.info ("Writing modified structure to "+ self.output_pdb_path)
         pdbIo.saveStructure(st,self.output_pdb_path)
         out_log.info ("Done")
 

@@ -11,9 +11,8 @@ import sys
 MODELS_MAXRMS=5.0
 
 class PDBManager():
-    def __init__(self,args):
-        self.useChains=False
-        self.models=args.useModels
+    def __init__(self,useModels):
+        self.models=useModels
         
     def loadStructure(self, pdb_path, debug=False):
         if "pdb:"in pdb_path:
