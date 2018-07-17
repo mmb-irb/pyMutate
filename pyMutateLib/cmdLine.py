@@ -1,10 +1,6 @@
-
 import argparse
 import sys
 
-homeDir="/home/gelpi/data/DEVEL/BioExcel/pyMutate"
-resLibFile = homeDir + '/dat/all_amino03.in'
-mutMapFile = homeDir + '/dat/pyMutateData.json'
 
 class cmdLine():
     def __init__(self, defaults=[]):
@@ -47,7 +43,7 @@ class cmdLine():
             action='store',
             dest='mutationMap',
             help='Mutation rules',
-            default=mutMapFile
+            default=defaults['mutMapFile']
         )
         
         self.argparser.add_argument(
@@ -55,7 +51,7 @@ class cmdLine():
             action='store',
             dest='residueLib',
             help='Residue Lib (amber prep format)',
-            default=resLibFile
+            default=defaults['resLibFile']
         )
         
         self.argparser.add_argument(
