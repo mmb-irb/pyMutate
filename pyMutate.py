@@ -2,8 +2,8 @@
 
 #
 # pyMutate: simple script to mutate one or more side chains
-#           compatible with biobb . Standalone Version
-#
+#           compatible with biobb         
+# 
 __author__ = "gelpi"
 __date__ = "$13-jul-2018 15:52:55$"
 
