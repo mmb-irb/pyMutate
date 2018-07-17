@@ -11,8 +11,6 @@ import sys
 import os
 import pyMutateLib
 
-
-
 class pyMutate():
     def __init__(self, input_pdb_path, output_pdb_path, args):
         self.input_pdb_path = input_pdb_path
@@ -22,6 +20,11 @@ class pyMutate():
         self.mutMapFile = args.mutMapFile
         self.useModels = args.useModels
         self.debug = args.debug
+        self.removeH = args.removeH
+        if self.removeH == 'no':
+            print ("WARNING: removeH = no is not implemented (yet), using default (mut)")
+            self.removeH == 'mut'
+        
 #load data
         self.resLib = pyMutateLib.ResidueLib(self.resLibFile)
         self.mutMap = pyMutateLib.MutationMap(self.mutMapFile)
@@ -30,14 +33,14 @@ class pyMutate():
 # load structure ==============================================================
         print ("Loading structure from " + self.input_pdb_path)
         pdbdata = pyMutateLib.PDBManager()
-        pdbdata.loadStructure(self.input_pdb_path, self.useModels, self.debug)
+        pdbdata.loadStructure(self.input_pdb_path, self.useModels, self.removeH, self.debug)
 # Do Mutations ================================================================
         self.muts = pyMutateLib.mutationManager(self.mutationList, self.debug)
 
         self.muts.checkMutations(pdbdata.st, self.debug)
 
         for mut in self.muts.mutList:
-            mut.apply(pdbdata.st, self.mutMap, self.resLib, self.debug)
+            mut.apply(pdbdata.st, self.mutMap, self.resLib, self.removeH, self.debug)
 # Save output =================================================================
         print ("Saving final structure to " + self.output_pdb_path)
         pdbdata.saveStructure(self.output_pdb_path)

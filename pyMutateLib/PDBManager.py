@@ -12,7 +12,7 @@ class PDBManager():
     def __init__(self):
         self.models = 'no'
 
-    def loadStructure(self, pdb_path, useModels, debug=False):
+    def loadStructure(self, pdb_path, useModels, removeH, debug=False):
         if "pdb:"in pdb_path:
             pdbl = PDBList(pdb='tmpPDB')
             try:
@@ -93,6 +93,18 @@ class PDBManager():
             for i in range(1, len(ids)):
                 self.st.detach_child(ids[i])
             self.useModels = False
+        # Hydrogens
+        self.removeH = removeH
+
+        if self.removeH == 'all':
+            print ("Removing H atoms")
+            for res in self.st.get_residues():
+                HList=[]
+                for at in res.get_atoms():
+                    if at.element == 'H':
+                        HList.append(at.id)
+                for atid in HList:
+                    res.detach_child(atid)
 
     def saveStructure(self, output_path):
         pdbio = PDBIO()

@@ -50,7 +50,6 @@ class mutationManager():
     def __str__(self):
        return ','.join(self.list)
 
-
 class Mutation():
     def __init__(self, mutId):
         if ':' not in mutId:
@@ -101,7 +100,7 @@ class Mutation():
             sys.exit(1)
         return self
 
-    def apply(self, st, mutMap, resLib, debug=False):
+    def apply(self, st, mutMap, resLib, removeH, debug=False):
         if debug:
             print (self.mutList)
             print ("#DEBUG: Mutation Rules")
@@ -120,11 +119,19 @@ class Mutation():
                         at.element = newat[0:1]
                         at.fullname=' ' + newat
                         res.add(at)
-
 # Deleting atoms
             for atid in mutMap.getRules(res.get_resname(),self.newid,'Del'):
                 print ("  Deleting "+ atid)
                 res.detach_child(atid)
+# Deleting H
+            if removeH == 'mut':
+                HList=[]
+                for at in res.get_atoms():
+                    if at.element=='H':
+                        HList.append(at.id)
+                for atid in HList:
+                    print ("  Deleting "+atid)
+                    res.detach_child(atid)
 # Adding atoms
             for atid in mutMap.getRules(res.get_resname(),self.newid,'Add'):
                 print ("  Adding new atom "+ atid)
