@@ -11,8 +11,12 @@ import pyMutateLib
 __author__ = "gelpi"
 __date__ = "$13-jul-2018 15:52:55$"
 
+homeDir = "PATH_TO_APPDIR"
+resLibFile = homeDir + '/dat/all_amino03.in'
+mutMapFile = homeDir + '/dat/pyMutateData.json'
+
 if __name__ == "__main__":
-    cmdline = pyMutateLib.cmdLine()
+    cmdline = pyMutateLib.cmdLine(defaults={'resLibFile':resLibFile, 'mutMapFile':mutmapFile})
     args=cmdline.parse_args()
 # ============================================================================
     pdbIo = pyMutateLib.PDBManager(args)
