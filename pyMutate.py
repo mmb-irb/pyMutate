@@ -8,17 +8,12 @@ __author__ = "gelpi"
 __date__ = "$13-jul-2018 15:52:55$"
 
 import sys
+import os
 import pyMutateLib
 
-# Setting required for standalone use
-#
-# homeDir = "PATH_TO_APPDIR"
-#
-homeDir = "/home/gelpi/data/DEVEL/BioExcel/pyMutate"
-
 # Default data
-resLibFile = homeDir + '/dat/all_amino03.in'
-mutMapFile = homeDir + '/dat/pyMutateData.json'
+resLibFile = os.environ['pyMUTATEDIR'] + '/dat/all_amino03.in'
+mutMapFile = os.environ['pyMUTATEDIR'] + '/dat/pyMutateData.json'
 
 class pyMutate():
     def __init__(self, input_pdb_path, output_pdb_path, args):
@@ -84,6 +79,8 @@ class pyMutate():
         print ("Done")
 
 def main():
+    if os.environ['pyMUTATEDIR'] == '':
+        print ("WARNING: $pyMUTATEDIR not set")
 
     cmdline = pyMutateLib.cmdLine(defaults={'resLibFile':resLibFile, 'mutMapFile':mutMapFile})
     args = cmdline.parse_args()
@@ -94,7 +91,6 @@ def main():
     print ('==============================================')
 
     pyMutateLib.cmdLine.printArgs(args)
-
 
     pyMutate(args.input_pdb_path, args.output_pdb_path, args).launch()
 
