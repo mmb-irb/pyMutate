@@ -1,9 +1,9 @@
 #! /usr/bin/python
 
-# 
+#
 # pyMutate: simple script to mutate one or more side chains
-#           compatible with biobb . Standalone Version        
-# 
+#           compatible with biobb . Standalone Version
+#
 __author__ = "gelpi"
 __date__ = "$13-jul-2018 15:52:55$"
 
@@ -11,7 +11,7 @@ import sys
 import pyMutateLib
 
 # Setting required for standalone use
-# 
+#
 # homeDir = "PATH_TO_APPDIR"
 #
 homeDir = "/home/gelpi/data/DEVEL/BioExcel/pyMutate"
@@ -29,20 +29,20 @@ class pyMutate():
         self.mutMapFile = args.mutMapFile
         self.useModels = args.useModels
         self.debug = args.debug
-    
+
     def launch(self):
 #load data
-        resLib = pyMutateLib.ResidueLib(self.resLibFile)
-        mutMap = pyMutateLib.MutationMap(self.mutMapFile)
+        self.resLib = pyMutateLib.ResidueLib(self.resLibFile)
+        self.mutMap = pyMutateLib.MutationMap(self.mutMapFile)
 
 #load structure
         pdbIo = pyMutateLib.PDBManager(self.useModels)
 
-        st = pdbIo.loadStructure(self.input_pdb_path)
+        self.st = pdbIo.loadStructure(self.input_pdb_path)
         self.format = pdbIo.format
 
     #Checking models
-        if len(st) > 1:
+        if len(self.st) > 1:
             if self.useModels == 'no':
                 print ("#WARNING: Input Structure contains models, but using only first one due to useModels settings")
                 self.useModels = False
@@ -52,47 +52,50 @@ class pyMutate():
                     self.useModels = False
                 else:
                     self.useModels = True
-            elif self.useModels == 'force':             
+            elif self.useModels == 'force':
                 if pdbIo.models == 'alt':
                     print ('#WARNING: Models found look like NMR models, but using all due to useModels = force')
                 self.useModels = True
             else:
                 print ("#ERROR: Unknown useModels option", file=sys.stderr)
-        if not self.useModels:
-            print ("Removing models")
-            ids = []
-            for md in st.get_models():
-                ids.append(md.id)
-            for i in range(1, len(ids)):
-                st.detach_child(ids[i])
-            self.useModels = False
+                sys.exit
+                
+            if not self.useModels:
+                print ("Removing models")
+                ids = []
+                for md in self.st.get_models():
+                    ids.append(md.id)
+                for i in range(1, len(ids)):
+                    self.st.detach_child(ids[i])
+                self.useModels = False
         else:
             self.useModels = False
-        
-#=============================================================================
-# Mutations
-        muts = pyMutateLib.mutationManager(self.mutationList, self.debug)
 
-        muts.checkMutations(st, self.debug)
-    
-        for mut in muts.mutList:
-            mut.apply(st, mutMap, resLib, self.debug)
 #=============================================================================
-        pdbIo.saveStructure(st, self.output_pdb_path)
+# Do Mutations
+        self.muts = pyMutateLib.mutationManager(self.mutationList, self.debug)
+
+        self.muts.checkMutations(self.st, self.debug)
+
+        for mut in self.muts.mutList:
+            mut.apply(self.st, self.mutMap, self.resLib, self.debug)
+#=============================================================================
+        pyMutateLib.PDBManager.saveStructure(self.st, self.output_pdb_path)
         print ("Done")
 
 def main():
 
     cmdline = pyMutateLib.cmdLine(defaults={'resLibFile':resLibFile, 'mutMapFile':mutMapFile})
     args = cmdline.parse_args()
-    
+
     print ('==============================================')
     print ('     Simple side-chain mutation utility')
     print ('             J.L Gelpi 2018')
     print ('==============================================')
-    cmdline.printArgs(args)
     
- 
+    pyMutateLib.cmdLine.printArgs(args)
+
+
     pyMutate(args.input_pdb_path, args.output_pdb_path, args).launch()
 
 if __name__ == "__main__":
