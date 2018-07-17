@@ -16,7 +16,7 @@ resLibFile = homeDir + '/dat/all_amino03.in'
 mutMapFile = homeDir + '/dat/pyMutateData.json'
 
 if __name__ == "__main__":
-    cmdline = pyMutateLib.cmdLine(defaults={'resLibFile':resLibFile, 'mutMapFile':mutmapFile})
+    cmdline = pyMutateLib.cmdLine(defaults={'resLibFile':resLibFile, 'mutMapFile':mutMapFile})
     args=cmdline.parse_args()
 # ============================================================================
     pdbIo = pyMutateLib.PDBManager(args)

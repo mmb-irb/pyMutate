@@ -36,7 +36,7 @@ class mutationManager():
         if 'file:' in idList:
             #Load from file
             idList = idList.replace ('file:','')
-            print ('#INFO: reading mutation list from file ' + idList)
+            print ('Reading mutation list from file ' + idList)
             for line in open(idList,'r'):
                 self.idList.append(line)
             self.idList = list(map (lambda x: x.replace('\n','').replace('\r',''), self.idList))
@@ -125,7 +125,6 @@ class Mutation():
                 print ("  Deleting "+ atid)
                 res.detach_child(atid)
 #Adding atoms
-#TODO
             for atid in map.getRules(res.get_resname(),self.newid,'Add'):
                 print ("  Adding new atom "+ atid)
                 if atid == 'CB':
