@@ -23,8 +23,8 @@ class pyMutate():
         self.removeH = args.removeH
         if self.removeH == 'no':
             print ("WARNING: removeH = no is not implemented (yet), using default (mut)")
-            self.removeH == 'mut'
-        
+            self.removeH = 'mut'
+
 #load data
         self.resLib = pyMutateLib.ResidueLib(self.resLibFile)
         self.mutMap = pyMutateLib.MutationMap(self.mutMapFile)
