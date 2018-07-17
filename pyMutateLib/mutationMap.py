@@ -11,7 +11,7 @@ class MutationMap():
             jsonmap = json.load(fh)
             self.map = jsonmap['mutationMap']
         except IOError:
-            print ("#ERROR: fetching MutationMap "+ file, file=sys.stderr)
+            print ("ERROR: unable to open MutationMap "+ file, file=sys.stderr)
             sys.exit(2)
 
     def getRules(self,aain,aaout,ruleType):
