@@ -13,7 +13,7 @@ MODELS_MAXRMS=5.0
 class PDBManager():
     def __init__(self,useModels):
         self.models=useModels
-        
+
     def loadStructure(self, pdb_path, debug=False):
         if "pdb:"in pdb_path:
             pdbl= PDBList(pdb='tmpPDB')
@@ -49,7 +49,7 @@ class PDBManager():
         for r in st.get_residues():
             r.index = i
             i=i+1
-        #Atom renumbering for mmCIF, 
+        #Atom renumbering for mmCIF,
         if self.format == 'cif':
             i=1
             for at in st.get_atoms(): # Check numbering in models
@@ -57,22 +57,33 @@ class PDBManager():
                 if hasattr(at,'selected_child'):
                     at.selected_child.serial_number=i
                 i=i+1
-        self.numAts=0        
-        
+        self.numAts=0
+
         for at in st[0].get_atoms():
             self.numAts=self.numAts+1
         #checking models
         if len(st) > 1 and self.models=='auto':
             if debug:
                 print ("#DEBUG: Found "+str(len(st))+" models")
-                print ("#DEBUG: RMS " + self.calcRMSdAll(st[0],st[1]))
-            if self.calcRMSdAll(st[0],st[1]) < MODELS_MAXRMS:
+                print ("#DEBUG: RMS " + PDBManager.calcRMSdAll(st[0],st[1]))
+            if PDBManager.calcRMSdAll(st[0],st[1]) < MODELS_MAXRMS:
                 if debug:
                     print ("#DEBUG: Models look like alternative conformations, will consider only one")
-                self.models='alt'                
+                self.models='alt'
         return st
 
-    def calcRMSdAll (self, st1,st2):
+
+    @classmethod
+    def saveStructure(cls, st, output_path):
+        pdbio=PDBIO()
+        pdbio.set_structure(st)
+        try:
+            pdbio.save(output_path)
+        except OSError:
+            print ("#ERROR: unable to save PDB data on "+ output_path, file=sys.stderr)
+
+    @classmethod
+    def calcRMSdAll (cls, st1,st2):
         ats1=[]
         ats2=[]
         for at in st1.get_atoms():
@@ -86,12 +97,3 @@ class PDBManager():
             rmsd = rmsd + d*d/len(ats1)
             i=i+1
         return (math.sqrt(rmsd))
-        
-    def saveStructure(self, st, output_path):
-        pdbio=PDBIO()
-        pdbio.set_structure(st)
-        try:
-            pdbio.save(output_path)
-        except OSError:
-            print ("#ERROR: unable to save PDB data on "+ output_path, file=sys.stderr)
-            
