@@ -1,6 +1,6 @@
-# 
+#
 # Class to read AMBER residue lib
-# 
+#
 import sys
 import re
 
@@ -11,10 +11,10 @@ class ResidueLib():
         except IOError:
             print ("#ERROR: unable to open "+ file_path )
             sys.exit(1)
-        
+
         line=fh.readline()
         line=fh.readline()
-        
+
         self.residues={}
         atgroup=False
         chgroup=False
@@ -22,8 +22,6 @@ class ResidueLib():
         res=ResidueDef()
         for line in fh:
             line = line.replace("\n","").replace("\r","")
-#            print (line+"\n")
-#            print (atgroup, chgroup, imgroup)
             if line=='':
                 continue
             elif line == "DONE":
@@ -47,15 +45,14 @@ class ResidueLib():
                 #print (len(data))
                 if len(data) <11:
                     continue
-                at=AtomDef(data)        
+                at=AtomDef(data)
                 res.ats.append(at)
             elif chgroup:
                 for c in line.split():
                     res.charges.append(c)
             elif imgroup:
                 res.improper.append(line)
-            #print(vars(res))
-            
+
 class ResidueDef():
     def __init__(self):
         self.id=''
@@ -63,7 +60,7 @@ class ResidueDef():
         self.ats=['']
         self.improper=[]
         self.charges=[]
-    
+
 class AtomDef():
     def __init__(self,data):
         self.id=data[1]

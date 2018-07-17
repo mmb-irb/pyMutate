@@ -5,7 +5,7 @@
 import re
 import sys
 from Bio.PDB.Atom import Atom
-import math
+
 from numpy import sin, cos, pi
 from numpy.linalg import norm
 import numpy as np
@@ -19,54 +19,55 @@ oneLetterResidueCode = {
 
 threeLetterResidueCode = {
         'A':'ALA', 'C': 'CYS', 'D':'ASP', 'E':'GLU', 'F':'PHE', 'G':'GLY',
-        'H':'HIS', 'I':'ILE', 'K':'LYS', 'L':'LEU', 'M':'MET', 'N':'ASN', 
+        'H':'HIS', 'I':'ILE', 'K':'LYS', 'L':'LEU', 'M':'MET', 'N':'ASN',
         'P':'PRO', 'Q':'GLN', 'R':'ARG', 'S':'SER',
         'T':'THR', 'V':'VAL', 'W':'TRP', 'Y':'TYR'
     }
-    
+
 
 class mutationManager():
 
-    def __init__(self):
+    def __init__(self, idList, debug=False):
         self.idlist=[]
         self.mutList=[]
 
-    def loadMutationList(self,idList,debug=False):
-        self.idList=[]
         if 'file:' in idList:
             #Load from file
             idList = idList.replace ('file:','')
             print ('Reading mutation list from file ' + idList)
             for line in open(idList,'r'):
-                self.idList.append(line)
-            self.idList = list(map (lambda x: x.replace('\n','').replace('\r',''), self.idList))
+                self.idList.append(line.replace('\n','').replace('\r',''))
         else:
             self.idList=idList.replace(' ','').split(',')
-        #convert to list of mut objects
-        self.idList = list(map (lambda x: Mutation(x) , self.idList))
-        
-        
+        #convert to list of Mutation objects
+        self.idList = list(map (Mutation, self.idList))
+
+
     def checkMutations (self, st, debug=False, stop_on_error=True):
-        self.mutList=[]
         for mut in self.idList:
-            self.mutList.append(mut.check(st, debug, stop_on_error))        
-    
+            self.mutList.append(mut.check(st, debug, stop_on_error))
+
     def __str__(self):
        return ','.join(self.list)
 
-        
+
 class Mutation():
     def __init__(self, mutId):
         if ':' not in mutId:
             mutId = '*:'+mutId
+
         self.id = mutId.upper()
+
         [self.chain, mut] = mutId.split(':')
+
         mutcomps = re.match('([A-z]*)([0-9]*)([A-z]*)',mut)
+
         self.oldid = _residueCheck(mutcomps.group(1))
         self.newid = _residueCheck(mutcomps.group(3))
         self.resNum = mutcomps.group(2)
-        self.id = self.chain + ":" + self.oldid + self.resNum + self.newid        
-    
+
+        self.id = self.chain + ":" + self.oldid + self.resNum + self.newid
+
     def check (self, st, debug=False, stop_on_error=True): # Check which mutations are possible
         if debug:
             print ('#DEBUG: Checking '+ self.id)
@@ -87,7 +88,7 @@ class Mutation():
                         {
                             'model':model.get_id(),
                             'chain':ch,
-                            'residue':residue.get_id(), 
+                            'residue':residue.get_id(),
                             'newRes':self.newid
                         })
                         ok = ok + 1
@@ -99,17 +100,17 @@ class Mutation():
             print ("#ERROR: no mutations available for " + self.id)
             sys.exit(1)
         return self
-    
-    def apply(self, st, map, resLib, debug=False):
+
+    def apply(self, st, mutMap, resLib, debug=False):
         if debug:
             print (self.mutList)
             print ("#DEBUG: Mutation Rules")
-            print (map.map[self.oldid][self.newid])
+            print (mutMap.map[self.oldid][self.newid])
         for m in self.mutList:
             res = st[m['model']][m['chain']][m['residue']]
             print ("Replacing " + _residueid(res) + " to " + self.newid)
 # Renaming ats
-            for r in map.getRules(res.get_resname(),self.newid, 'Mov'):
+            for r in mutMap.getRules(res.get_resname(),self.newid, 'Mov'):
                 [oldat,newat]=r.split("-")
                 print ("  Renaming "+ oldat + " to " + newat)
                 for at in res.get_atoms():
@@ -119,25 +120,25 @@ class Mutation():
                         at.element = newat[0:1]
                         at.fullname=' ' + newat
                         res.add(at)
-                        
-# delete atoms  
-            for atid in map.getRules(res.get_resname(),self.newid,'Del'):
+
+# Deleting atoms
+            for atid in mutMap.getRules(res.get_resname(),self.newid,'Del'):
                 print ("  Deleting "+ atid)
                 res.detach_child(atid)
-#Adding atoms
-            for atid in map.getRules(res.get_resname(),self.newid,'Add'):
+# Adding atoms
+            for atid in mutMap.getRules(res.get_resname(),self.newid,'Add'):
                 print ("  Adding new atom "+ atid)
                 if atid == 'CB':
                     at = Atom(atid, _buildCoordsCB(res), 99.0, 1.0, ' ', ' '+atid+' ', 0, atid[0:1])
                 else:
                     at = Atom(atid, _buildCoordsOther(res,resLib,self.newid,atid), 99.0, 1.0, ' ', ' '+atid+' ', 0, atid[0:1])
                 res.add(at)
-                
+
 #Renaming residue
             res.resname=self.newid
             print ("")
-        
-                
+
+
     def __str__(self):
         return self.id
 
@@ -154,27 +155,19 @@ def _residueCheck(r):
     else:
        print ('#ERROR: unknown residue id ' + r)
        sys.exit(1)
+
     return resid
 
 def _buildCoordsOther(res, resLib, newres,atid):
-#    print (res.get_list())            
-#    print (res.child_dict.keys())
+
     residDef = resLib.residues[newres]
     i=1
     while residDef.ats[i].id != atid and i<len(residDef.ats):
         i=i+1
     if residDef.ats[i].id == atid:
-#        print (i)
-#        print (vars(residDef.ats[i]))
-#        print (residDef.ats[residDef.ats[i].link[0]].id)
-#        print (residDef.ats[residDef.ats[i].link[1]].id)
-#        print (residDef.ats[residDef.ats[i].link[2]].id)
-#        print (residDef.ats[residDef.ats[i].link[0]],residDef.ats[i].geom[0],res[residDef.ats[residDef.ats[i].link[0]].id].get_coord())
-#        print (residDef.ats[residDef.ats[i].link[1]],residDef.ats[i].geom[1],res[residDef.ats[residDef.ats[i].link[1]].id].get_coord())
-#        print (residDef.ats[residDef.ats[i].link[2]],residDef.ats[i].geom[2],res[residDef.ats[residDef.ats[i].link[2]].id].get_coord())
         return _buildCoords(
             res[residDef.ats[residDef.ats[i].link[0]].id].get_coord(),
-            res[residDef.ats[residDef.ats[i].link[1]].id].get_coord(), 
+            res[residDef.ats[residDef.ats[i].link[1]].id].get_coord(),
             res[residDef.ats[residDef.ats[i].link[2]].id].get_coord(),
             residDef.ats[i].geom
             )
@@ -183,6 +176,7 @@ def _buildCoordsOther(res, resLib, newres,atid):
         sys.exit(1)
 
 def _buildCoordsCB(res): # Get CB from Backbone
+
     return _buildCoords(
         res['CA'].get_coord(),
         res['N'].get_coord(),
@@ -190,8 +184,9 @@ def _buildCoordsCB(res): # Get CB from Backbone
         [1.5, 115.5, -123.]
         )
 
-            
+
 def _buildCoords(avec,bvec,cvec,geom):
+
     dst = geom[0]
     ang = geom[1] * pi / 180.
     tor = geom[2] * pi / 180.0
@@ -216,5 +211,3 @@ def _buildCoords(avec,bvec,cvec,geom):
     v1 *= dst * cos(ang)
 
     return avec + v3 - v1
-    
-    

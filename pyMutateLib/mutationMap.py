@@ -1,6 +1,6 @@
-# 
+#
 # mutationMap
-# 
+#
 
 import json
 
@@ -13,9 +13,9 @@ class MutationMap():
         except IOError:
             print ("#ERROR: fetching MutationMap "+ file, file=sys.stderr)
             sys.exit(2)
-    
-    def getRules(self,aain,aaout,type):
-        return self.map[aain][aaout][type]
-    
+
+    def getRules(self,aain,aaout,ruleType):
+        return self.map[aain][aaout][ruleType]
+
 
 

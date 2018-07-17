@@ -1,9 +1,7 @@
 import argparse
-import sys
-
 
 class cmdLine():
-    def __init__(self, defaults=[]):
+    def __init__(self, defaults):
         self.argparser = argparse.ArgumentParser(
             prog='pyMutate',
         description='Basic utility to mutate protein side chains'
@@ -23,15 +21,15 @@ class cmdLine():
             help='Use all Models [no, auto, force]',
             default='auto'
         )
-    
+
         self.argparser.add_argument(
             '-i',
             action='store',
             dest='input_pdb_path',
-            help='PDB File | pdb:pdbId', 
+            help='PDB/mmCIF File | pdb:pdbId',
             required=True
         )
-        
+
         self.argparser.add_argument(
             '-m',
             action='store',
@@ -39,7 +37,7 @@ class cmdLine():
             help='List of mutations ([chain:]OldIdNumNewId as in A:Arg232Gln, no chain or * for all chains ) | file:file_path ',
             required=True
         )
-        
+
         self.argparser.add_argument(
             '--map',
             action='store',
@@ -47,7 +45,7 @@ class cmdLine():
             help='Mutation rules',
             default=defaults['mutMapFile']
         )
-        
+
         self.argparser.add_argument(
             '--rlib',
             action='store',
@@ -55,25 +53,21 @@ class cmdLine():
             help='Residue Lib (amber prep format)',
             default=defaults['resLibFile']
         )
-        
+
         self.argparser.add_argument(
             '-o',
             action='store',
             dest='output_pdb_path',
-            help='Output PDB File', 
+            help='Output PDB File',
             required=True
         )
 
-    def parse_args(self):    
+    def parse_args(self):
         args = self.argparser.parse_args()
-#        if not args.inputpdb_path:
-#            self.argparser.print_help()
-#            sys.exit(2)
-        return args
 
-    def printArgs(self,args):
-        print ('Arguments list')
-        print ('==============')
+    @classmethod
+    def printArgs(cls, args):
+
         print (' input_pdb_path: ', args.input_pdb_path)
         print (' mutations:      ', args.mutationList)
         print (' output_pdb_path:', args.output_pdb_path)

@@ -1,12 +1,11 @@
 #! /usr/bin/python
 
-# 
+#
 # pyMutate: simple script to mutate one or more side chains
-#           compatible with biobb         
-# 
+#           compatible with biobb . Standalone Version
+#
 __author__ = "gelpi"
 __date__ = "$13-jul-2018 15:52:55$"
-
 
 import sys
 import pyMutateLib
@@ -36,8 +35,8 @@ class pyMutate():
         self.step=properties.get('step', None)
         self.path=properties.get('path', None)
         self.mutation = properties.get('mutation', None)
-        self.resLib = properties.get('resLib')
-        self.mutMap = properties.get('mutMap')
+        self.resLib = properties.get('resLibFile')
+        self.mutMap = properties.get('mutMapFile')
         self.useModels = properties.get('useModels', None)
     
     def launch(self):
