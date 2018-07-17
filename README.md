@@ -1,5 +1,5 @@
 # pyMutate
-
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/035eb023fd9b4484977ace3dbc73acd1)](https://www.codacy.com/app/jlgelpi/pyMutate?utm_source=mmb.irbbarcelona.org&amp;utm_medium=referral&amp;utm_content=gitlab/BioExcel/pyMutate&amp;utm_campaign=Badge_Grade)
 ### Simple utility to mutate side chains.
 Uses a set of rules (/dat/pyMutateData.json) to transform side chains  
 New CB atoms are built from backbone  
