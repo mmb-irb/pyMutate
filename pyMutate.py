@@ -58,8 +58,8 @@ class pyMutate():
                 self.useModels = True
             else:
                 print ("#ERROR: Unknown useModels option", file=sys.stderr)
-                sys.exit
-                
+                sys.exit(1)
+
             if not self.useModels:
                 print ("Removing models")
                 ids = []
@@ -92,7 +92,7 @@ def main():
     print ('     Simple side-chain mutation utility')
     print ('             J.L Gelpi 2018')
     print ('==============================================')
-    
+
     pyMutateLib.cmdLine.printArgs(args)
 
 

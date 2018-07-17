@@ -1,6 +1,4 @@
 import argparse
-import sys
-
 
 class cmdLine():
     def __init__(self, defaults):

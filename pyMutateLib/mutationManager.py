@@ -36,8 +36,7 @@ class mutationManager():
             idList = idList.replace ('file:','')
             print ('Reading mutation list from file ' + idList)
             for line in open(idList,'r'):
-                self.idList.append(line)
-            self.idList = list(map (lambda x: x.replace('\n','').replace('\r',''), self.idList))
+                self.idList.append(line.replace('\n','').replace('\r',''))
         else:
             self.idList=idList.replace(' ','').split(',')
         #convert to list of Mutation objects

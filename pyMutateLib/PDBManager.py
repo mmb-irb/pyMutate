@@ -72,7 +72,7 @@ class PDBManager():
                 self.models='alt'
         return st
 
-   
+
     @classmethod
     def saveStructure(cls, st, output_path):
         pdbio=PDBIO()
