@@ -32,28 +32,29 @@ class pyMutate():
         self.mutation_map = pyMutateLib.MutationMap(self.mutMap_path)
 
     def launch(self):
+
 # load structure ==============================================================
         print ("Loading structure from " + self.input_pdb_path)
         pdbdata = pyMutateLib.StructureManager()
         pdbdata.loadStructure(self.input_pdb_path, self.use_models, self.remove_H, self.debug)
-# Do Mutations ================================================================
-        self.muts = pyMutateLib.MutationManager(self.mutation_list, self.debug)
 
-        self.muts.checkMutations(pdbdata.st, self.debug)
+# Check and Do Mutations ================================================================
+        mutations = pyMutateLib.MutationManager(self.mutation_list, self.debug)
 
-        for mut in self.muts.mutList:
-            mut.apply(pdbdata.st, self.mutation_map, self.residue_lib, self.remove_H, self.debug)
+        mutations.prepareMutations(pdbdata.st, self.debug)
+
+        mutations.applyMutations (pdbdata.st, self.mutation_map, self.residue_lib, self.remove_H, self.debug)
 # Save output =================================================================
         print ("Saving final structure to " + self.output_pdb_path)
         pdbdata.saveStructure(self.output_pdb_path)
         print ("Done")
 
 def main():
-    
+
     if os.getenv('pyMUTATEDIR') == None:
         print ("WARNING: $pyMUTATEDIR not set")
         defaults={'resLib_path' : '', 'mutMap_path' : ''}
-    
+
     else:
 # Default data
         defaults={

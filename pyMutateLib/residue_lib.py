@@ -1,74 +1,87 @@
-#
-# Class to read AMBER residue lib
-#
-import sys
+"""
+ Module to read AMBER residue lib
+"""
+
 import re
+import sys
 
 class ResidueLib():
-    def __init__(self, file_path):
+
+    def __init__(self, library_path):
+
         try:
-            fh=open(file_path,"r")
+            fh = open(library_path, "r")
+
         except IOError:
-            print ("ERROR: unable to open residue library"+ file_path, file=sys.stderr)
+            print ("ERROR: unable to open residue library" + library_path, file=sys.stderr)
             sys.exit(1)
 
-        line=fh.readline()
-        line=fh.readline()
+        line = fh.readline()
+        line = fh.readline()
 
-        self.residues={}
-        atgroup=False
-        chgroup=False
-        imgroup=False
-        res=ResidueDef()
+        self.residues = {}
+        at_group = False
+        ch_group = False
+        im_group = False
+        res = ResidueDef()
         for line in fh:
-            line = line.replace("\n","").replace("\r","")
-            if line=='':
+            line = line.replace("\n", "").replace("\r", "")
+            if line == '':
                 continue
+
             elif line == "DONE":
-                self.residues[res.id]=res
-                atgroup=False
-                chgroup=False
-                imgroup=False
-                res=ResidueDef()
-            elif line=='CHARGE':
-                atgroup=False
-                chgroup=True
-            elif line=='IMPROPER':
-                chgroup=False
-                imgroup=True
-            elif re.match(' (...)  INT',line):
-                residstr=re.match(' (...)  INT',line)
-                res.id=residstr.group(1)
-                atgroup=True
-            elif atgroup:
+                self.residues[res.id] = res
+                at_group = False
+                ch_group = False
+                im_group = False
+                res = ResidueDef()
+
+            elif line == 'CHARGE':
+                at_group = False
+                ch_group = True
+
+            elif line == 'IMPROPER':
+                ch_group = False
+                im_group = True
+
+            elif re.match(' (...)  INT', line):
+                resid_str = re.match(' (...)  INT', line)
+                res.id = resid_str.group(1)
+                at_group = True
+
+            elif at_group:
                 data = line.split()
-                #print (len(data))
-                if len(data) <11:
+                if len(data) < 11:
                     continue
-                at=AtomDef(data)
+                at = AtomDef(data)
                 res.ats.append(at)
-            elif chgroup:
+
+            elif ch_group:
                 for c in line.split():
                     res.charges.append(c)
-            elif imgroup:
+
+            elif im_group:
                 res.improper.append(line)
 
 class ResidueDef():
+
     def __init__(self):
-        self.id=''
-        self.name=''
-        self.ats=['']
-        self.improper=[]
-        self.charges=[]
+        self.id = ''
+        self.name = ''
+        self.ats = ['']
+        self.improper = []
+        self.charges = []
 
 class AtomDef():
-    def __init__(self,data):
-        self.id=data[1]
-        self.type=data[2]
-        self.branch=data[3]
-        self.link=[int(data[4]), int(data[5]), int(data[6])]
-        self.geom=[float(data[7]), float(data[8]), float(data[9])]
-        self.coord=[[0.,0.,0.],[0.,0.,0.],[0.,0.,0.]]
-        self.ch=float(data[10])
+
+    def __init__(self, data):
+        self.id = data[1]
+        self.type = data[2]
+        self.branch = data[3]
+        self.link = [int(data[4]), int(data[5]), int(data[6])]
+        self.geom = [float(data[7]), float(data[8]), float(data[9])]
+        self.coord = [[0., 0., 0.], [0., 0., 0.], [0., 0., 0.]]
+        self.ch = float(data[10])
+
     def __str__(self):
         return self.id

@@ -65,7 +65,7 @@ class CmdLine():
             help='Output PDB File',
             required=True
         )
-        
+
         self.argparser.add_argument(
             '--remove_H',
             action='store',
