@@ -52,7 +52,7 @@ def residueCheck(r):
         print ('#ERROR: unknown residue id ' + r)
         sys.exit(1)
 
-    return id
+    return rid
 
 # Atom building ===============================================================
 def buildCoordsOther(r, res_lib, new_res, at_id):
