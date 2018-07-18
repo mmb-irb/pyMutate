@@ -61,6 +61,13 @@ class cmdLine():
             help='Output PDB File',
             required=True
         )
+        
+        self.argparser.add_argument(
+            '--removeH',
+            action='store',
+            dest='removeH',
+            help='Remove H atoms is any before make changes (no, mut, all). Recommended',
+            default='mut')
 
     def parse_args(self):
         args = self.argparser.parse_args()
@@ -73,6 +80,7 @@ class cmdLine():
         print (' mutations:      ', args.mutationList)
         print (' output_pdb_path:', args.output_pdb_path)
         print (' Use PDB Models: ', args.useModels)
+        print (' Remove H:       ', args.removeH)
         print (' Mutation Rules: ', args.mutMapFile)
         print (' Residue Library:', args.resLibFile)
         if args.debug:

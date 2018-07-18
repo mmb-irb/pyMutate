@@ -8,17 +8,8 @@ __author__ = "gelpi"
 __date__ = "$13-jul-2018 15:52:55$"
 
 import sys
+import os
 import pyMutateLib
-
-# Setting required for standalone use
-#
-# homeDir = "PATH_TO_APPDIR"
-#
-homeDir = "/home/gelpi/data/DEVEL/BioExcel/pyMutate"
-
-# Default data
-resLibFile = homeDir + '/dat/all_amino03.in'
-mutMapFile = homeDir + '/dat/pyMutateData.json'
 
 class pyMutate():
     def __init__(self, input_pdb_path, output_pdb_path, args):
@@ -29,63 +20,44 @@ class pyMutate():
         self.mutMapFile = args.mutMapFile
         self.useModels = args.useModels
         self.debug = args.debug
+        self.removeH = args.removeH
+        if self.removeH == 'no':
+            print ("WARNING: removeH = no is not implemented (yet), using default (mut)")
+            self.removeH = 'mut'
 
-    def launch(self):
 #load data
         self.resLib = pyMutateLib.ResidueLib(self.resLibFile)
         self.mutMap = pyMutateLib.MutationMap(self.mutMapFile)
 
-#load structure
-        pdbIo = pyMutateLib.PDBManager(self.useModels)
-
-        self.st = pdbIo.loadStructure(self.input_pdb_path)
-        self.format = pdbIo.format
-
-    #Checking models
-        if len(self.st) > 1:
-            if self.useModels == 'no':
-                print ("#WARNING: Input Structure contains models, but using only first one due to useModels settings")
-                self.useModels = False
-            elif self.useModels == 'auto':
-                if pdbIo.models == 'alt':
-                    print ("#WARNING: Input Structure contains models, but they look as NMR models, using the first one (override with force)")
-                    self.useModels = False
-                else:
-                    self.useModels = True
-            elif self.useModels == 'force':
-                if pdbIo.models == 'alt':
-                    print ('#WARNING: Models found look like NMR models, but using all due to useModels = force')
-                self.useModels = True
-            else:
-                print ("#ERROR: Unknown useModels option", file=sys.stderr)
-                sys.exit(1)
-
-            if not self.useModels:
-                print ("Removing models")
-                ids = []
-                for md in self.st.get_models():
-                    ids.append(md.id)
-                for i in range(1, len(ids)):
-                    self.st.detach_child(ids[i])
-                self.useModels = False
-        else:
-            self.useModels = False
-
-#=============================================================================
-# Do Mutations
+    def launch(self):
+# load structure ==============================================================
+        print ("Loading structure from " + self.input_pdb_path)
+        pdbdata = pyMutateLib.PDBManager()
+        pdbdata.loadStructure(self.input_pdb_path, self.useModels, self.removeH, self.debug)
+# Do Mutations ================================================================
         self.muts = pyMutateLib.mutationManager(self.mutationList, self.debug)
 
-        self.muts.checkMutations(self.st, self.debug)
+        self.muts.checkMutations(pdbdata.st, self.debug)
 
         for mut in self.muts.mutList:
-            mut.apply(self.st, self.mutMap, self.resLib, self.debug)
-#=============================================================================
-        pyMutateLib.PDBManager.saveStructure(self.st, self.output_pdb_path)
+            mut.apply(pdbdata.st, self.mutMap, self.resLib, self.removeH, self.debug)
+# Save output =================================================================
+        print ("Saving final structure to " + self.output_pdb_path)
+        pdbdata.saveStructure(self.output_pdb_path)
         print ("Done")
 
 def main():
+    if os.getenv('pyMUTATEDIR') == None:
+        print ("WARNING: $pyMUTATEDIR not set")
+        defaults={'resLibFile' : '', 'mutMapFile' : ''}
+    else:
+# Default data
+        defaults={
+            'resLibFile' : os.getenv('pyMUTATEDIR') + '/dat/all_amino03.in',
+            'mutMapFile' : os.getenv('pyMUTATEDIR') + '/dat/pyMutateData.json'
+        }
 
-    cmdline = pyMutateLib.cmdLine(defaults={'resLibFile':resLibFile, 'mutMapFile':mutMapFile})
+    cmdline = pyMutateLib.cmdLine(defaults)
     args = cmdline.parse_args()
 
     print ('==============================================')
@@ -94,7 +66,6 @@ def main():
     print ('==============================================')
 
     pyMutateLib.cmdLine.printArgs(args)
-
 
     pyMutate(args.input_pdb_path, args.output_pdb_path, args).launch()
 

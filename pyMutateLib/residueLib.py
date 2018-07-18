@@ -9,7 +9,7 @@ class ResidueLib():
         try:
             fh=open(file_path,"r")
         except IOError:
-            print ("#ERROR: unable to open "+ file_path )
+            print ("ERROR: unable to open residue library"+ file_path, file=sys.stderr)
             sys.exit(1)
 
         line=fh.readline()
