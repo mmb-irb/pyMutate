@@ -2,13 +2,15 @@
     StructureManager: module to handle structure data.
 """
 
-import math
+
 import sys
 
 from Bio.PDB.PDBIO import PDBIO
 from Bio.PDB.PDBList import PDBList
 from Bio.PDB.PDBParser import PDBParser
 from Bio.PDB.MMCIFParser import MMCIFParser
+
+import pyMutateLib.util as util
 
 MODELS_MAXRMS = 5.0    # Threshold value to detect NMR models (angs)
 
@@ -78,9 +80,9 @@ class StructureManager():
             elif use_models == 'auto':
                 if debug:
                     print ("DEBUG: Found " + str(len(self.st)) + " models")
-                    print ("DEBUG: RMS " + str(StructureManager.calcRMSdAll(self.st[0], self.st[1])))
+                    print ("DEBUG: RMS " + str(util.calcRMSdAll(self.st[0], self.st[1])))
 
-                if StructureManager.calcRMSdAll(self.st[0], self.st[1]) < MODELS_MAXRMS:
+                if util.calcRMSdAll(self.st[0], self.st[1]) < MODELS_MAXRMS:
                     if debug:
                         print ("DEBUG: Models look like alternative conformations, will consider only one")
                     self.model_type = 'alt'
@@ -92,7 +94,7 @@ class StructureManager():
                     remove_models = False
 
             elif use_models == 'force':
-                if StructureManager.calcRMSdAll(self.st[0], self.st[1]) < MODELS_MAXRMS:
+                if util.calcRMSdAll(self.st[0], self.st[1]) < MODELS_MAXRMS:
                     print ('#WARNING: Models found look like NMR models, but using all due to use_models = force')
                 remove_models = False
 
@@ -115,7 +117,7 @@ class StructureManager():
             print ("Removing H atoms")
 
             for r in self.st.get_residues():
-                StructureManager.removeHFromRes(r)
+                util.removeHFromRes(r)
 
     def saveStructure(self, output_pdb_path):
 
@@ -128,31 +130,3 @@ class StructureManager():
         except OSError:
             print ("#ERROR: unable to save PDB data on " + output_path, file=sys.stderr)
 
-    @classmethod
-    def calcRMSdAll (cls, st1, st2):
-        ats1 = []
-        ats2 = []
-
-        for at in st1.get_atoms():
-            ats1.append(at)
-        for at in st2.get_atoms():
-            ats2.append(at)
-
-        rmsd = 0
-
-        i = 0
-        while i < len(ats1)and i < len(ats2):
-            d = ats1[i]-ats2[i]
-            rmsd = rmsd + d * d / len(ats1)
-            i = i + 1
-
-        return (math.sqrt(rmsd))
-
-    @classmethod
-    def removeHFromRes (cls,r):
-        H_list=[]
-        for at in r.get_atoms():
-            if at.element == 'H':
-                H_list.append(at.id)
-        for at_id in H_list:
-            r.detach_child(at_id)
