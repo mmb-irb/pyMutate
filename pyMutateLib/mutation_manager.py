@@ -126,7 +126,8 @@ class Mutation():
                 r.detach_child(at_id)
 # Deleting H
             if remove_H == 'mut':
-                util.removeHFromRes(r, verbose=True)
+                util.removeHFromRes(r, verbose=
+                True)
 
 # Adding atoms (new_id required as r.resname is still the original)
             for at_id in mut_map.getRules(r.get_resname(), self.new_id, ADD):
@@ -137,13 +138,13 @@ class Mutation():
                     coords = util.buildCoordsOther(r, res_lib, self.new_id, at_id)
 
                 at = Atom(
-                    at_id, 
-                    coords, 
-                    99.0, 
-                    1.0, 
-                    ' ', 
-                    ' ' + at_id + ' ', 
-                    0, 
+                    at_id,
+                    coords,
+                    99.0,
+                    1.0,
+                    ' ',
+                    ' ' + at_id + ' ',
+                    0,
                     at_id[0:1]
                     )
 

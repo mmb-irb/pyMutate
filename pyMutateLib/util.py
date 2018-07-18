@@ -43,11 +43,11 @@ def residueid(r):
 
 def residueCheck(r):
     r = r.upper()
-    id = ''
+    rid = ''
     if r in three_letter_residue_code.keys():
-        id = three_letter_residue_code[r]
+        rid = three_letter_residue_code[r]
     elif r in one_letter_residue_code.keys():
-        id = r
+        rid = r
     else:
         print ('#ERROR: unknown residue id ' + r)
         sys.exit(1)
