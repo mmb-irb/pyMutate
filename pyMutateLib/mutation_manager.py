@@ -7,7 +7,6 @@ import sys
 
 from Bio.PDB.Atom import Atom
 
-
 import pyMutateLib.util as util
 
 ADD = 'Add'
