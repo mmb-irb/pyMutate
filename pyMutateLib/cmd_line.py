@@ -1,3 +1,7 @@
+"""
+  Module to manage command line arguments
+"""
+
 import argparse
 
 class CmdLine():
@@ -15,10 +19,10 @@ class CmdLine():
         )
 
         self.argparser.add_argument(
-            '--useModels',
+            '--use_models',
             action='store',
-            dest='useModels',
-            help='Use all Models [no, auto, force]',
+            dest='use_models',
+            help='Use structure models [no, auto, force]',
             default='auto'
         )
 
@@ -33,7 +37,7 @@ class CmdLine():
         self.argparser.add_argument(
             '-m',
             action='store',
-            dest = 'mutationList',
+            dest = 'mutation_list',
             help='List of mutations ([chain:]OldIdNumNewId as in A:Arg232Gln, no chain or * for all chains ) | file:file_path ',
             required=True
         )
@@ -41,17 +45,17 @@ class CmdLine():
         self.argparser.add_argument(
             '--map',
             action='store',
-            dest='mutMapFile',
+            dest='mutMap_path',
             help='Mutation rules',
-            default=defaults['mutMapFile']
+            default=defaults['mutMap_path']
         )
 
         self.argparser.add_argument(
             '--rlib',
             action='store',
-            dest='resLibFile',
+            dest='resLib_path',
             help='Residue Lib (amber prep format)',
-            default=defaults['resLibFile']
+            default=defaults['resLib_path']
         )
 
         self.argparser.add_argument(
@@ -63,9 +67,9 @@ class CmdLine():
         )
         
         self.argparser.add_argument(
-            '--removeH',
+            '--remove_H',
             action='store',
-            dest='removeH',
+            dest='remove_H',
             help='Remove H atoms is any before make changes (no, mut, all). Recommended',
             default='mut')
 
@@ -77,12 +81,12 @@ class CmdLine():
     def printArgs(cls, args):
 
         print (' input_pdb_path: ', args.input_pdb_path)
-        print (' mutations:      ', args.mutationList)
+        print (' mutations:      ', args.mutation_list)
         print (' output_pdb_path:', args.output_pdb_path)
-        print (' Use PDB Models: ', args.useModels)
-        print (' Remove H:       ', args.removeH)
-        print (' Mutation Rules: ', args.mutMapFile)
-        print (' Residue Library:', args.resLibFile)
+        print (' Use PDB Models: ', args.use_models)
+        print (' Remove H:       ', args.remove_H)
+        print (' Mutation Rules: ', args.mutMap_path)
+        print (' Residue Library:', args.resLib_path)
         if args.debug:
             print (' DEBUG mode on')
         print()
