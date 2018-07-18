@@ -39,6 +39,7 @@ class mutationManager():
                 self.idList.append(line.replace('\n','').replace('\r',''))
         else:
             self.idList=idList.replace(' ','').split(',')
+
         #convert to list of Mutation objects
         self.idList = list(map (Mutation, self.idList))
 
