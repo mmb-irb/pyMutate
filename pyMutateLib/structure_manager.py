@@ -8,7 +8,7 @@ import sys
 
 MODELS_MAXRMS = 5.0
 
-class PDBManager():
+class StructureManager():
     def __init__(self):
         self.models = 'no'
 

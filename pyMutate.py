@@ -1,14 +1,17 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
-#
-# pyMutate: simple script to mutate one or more side chains
-#           compatible with biobb . Standalone Version
-#
+"""
+ pyMutate: simple script to mutate one or more side chains
+           compatible with biobb . Standalone Version
+
+"""
+
 __author__ = "gelpi"
 __date__ = "$13-jul-2018 15:52:55$"
 
 import sys
 import os
+
 import pyMutateLib
 
 class pyMutate():
@@ -32,10 +35,10 @@ class pyMutate():
     def launch(self):
 # load structure ==============================================================
         print ("Loading structure from " + self.input_pdb_path)
-        pdbdata = pyMutateLib.PDBManager()
+        pdbdata = pyMutateLib.StructureManager()
         pdbdata.loadStructure(self.input_pdb_path, self.useModels, self.removeH, self.debug)
 # Do Mutations ================================================================
-        self.muts = pyMutateLib.mutationManager(self.mutationList, self.debug)
+        self.muts = pyMutateLib.MutationManager(self.mutationList, self.debug)
 
         self.muts.checkMutations(pdbdata.st, self.debug)
 
@@ -57,7 +60,7 @@ def main():
             'mutMapFile' : os.getenv('pyMUTATEDIR') + '/dat/pyMutateData.json'
         }
 
-    cmdline = pyMutateLib.cmdLine(defaults)
+    cmdline = pyMutateLib.CmdLine(defaults)
     args = cmdline.parse_args()
 
     print ('==============================================')
@@ -65,7 +68,7 @@ def main():
     print ('             J.L Gelpi 2018')
     print ('==============================================')
 
-    pyMutateLib.cmdLine.printArgs(args)
+    pyMutateLib.CmdLine.printArgs(args)
 
     pyMutate(args.input_pdb_path, args.output_pdb_path, args).launch()
 

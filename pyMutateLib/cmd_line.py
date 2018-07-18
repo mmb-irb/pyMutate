@@ -1,6 +1,6 @@
 import argparse
 
-class cmdLine():
+class CmdLine():
     def __init__(self, defaults):
         self.argparser = argparse.ArgumentParser(
             prog='pyMutate',

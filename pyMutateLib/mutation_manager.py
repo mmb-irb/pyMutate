@@ -25,7 +25,7 @@ threeLetterResidueCode = {
     }
 
 
-class mutationManager():
+class MutationManager():
 
     def __init__(self, idList, debug=False):
         self.idlist=[]
