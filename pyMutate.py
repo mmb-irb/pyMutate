@@ -11,7 +11,7 @@ __date__ = "$13-jul-2018 15:52:55$"
 import sys
 import os
 
-from pyMutateLib.cmd_line import CmdLine
+from pyMutateLib.cmd_line import pyMutateCmdLine as CmdLine
 from pyMutateLib.residue_lib import ResidueLib
 from pyMutateLib.mutation_map import MutationMap
 from pyMutateLib.structure_manager import StructureManager

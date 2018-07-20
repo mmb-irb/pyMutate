@@ -4,7 +4,7 @@
 
 import argparse
 
-class CmdLine():
+class pyMutateCmdLine():
     def __init__(self, defaults):
         self.argparser = argparse.ArgumentParser(
             prog='pyMutate',
@@ -86,6 +86,75 @@ class CmdLine():
         print (' Use PDB Models: ', args.use_models)
         print (' Remove H:       ', args.remove_H)
         print (' Mutation Rules: ', args.mutMap_path)
+        print (' Residue Library:', args.resLib_path)
+        if args.debug:
+            print (' DEBUG mode on')
+        print()
+
+class pyCheckingCmdLine():
+    def __init__(self, defaults):
+        self.argparser = argparse.ArgumentParser(
+            prog='pyCheckStructure',
+        description='Basic utility to check protein structure for setup'
+        )
+
+        self.argparser.add_argument(
+            '--debug', '-d',
+            action='store_true',
+            dest='debug',
+            help='Produce DEBUG output'
+        )
+
+        self.argparser.add_argument(
+            '--use_models',
+            action='store',
+            dest='use_models',
+            help='Use structure models [no, auto, force]',
+            default='auto'
+        )
+
+        self.argparser.add_argument(
+            '-i',
+            action='store',
+            dest='input_pdb_path',
+            help='PDB/mmCIF File | pdb:pdbId',
+            required=True
+        )
+
+        self.argparser.add_argument(
+            '--rlib',
+            action='store',
+            dest='resLib_path',
+            help='Residue Lib (amber prep format)',
+            default=defaults['resLib_path']
+        )
+
+        self.argparser.add_argument(
+            '-o',
+            action='store',
+            dest='output_pdb_path',
+            help='Output PDB File',
+            required=True
+        )
+        
+        self.argparser.add_argument(
+            '--remove_H',
+            action='store_true',
+            dest='remove_H',
+            help='Remove H atoms is any before make changes. Recommended',
+            default='mut')
+
+        
+    def parse_args(self):
+        args = self.argparser.parse_args()
+        return args
+
+    @classmethod
+    def printArgs(cls, args):
+
+        print (' input_pdb_path: ', args.input_pdb_path)
+        print (' output_pdb_path:', args.output_pdb_path)
+        print (' Use PDB Models: ', args.use_models)
         print (' Residue Library:', args.resLib_path)
         if args.debug:
             print (' DEBUG mode on')
