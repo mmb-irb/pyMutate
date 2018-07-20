@@ -41,6 +41,9 @@ def residueid(r):
         + str(r.id[1]) + "/" \
         + str(r.get_parent().get_parent().id)
 
+def atomid(at):
+    return residueid(at.get_parent()) + "." +at.id
+
 def residueCheck(r):
     r = r.upper()
     rid = ''
@@ -127,3 +130,27 @@ def calcRMSdAll (st1, st2):
         i = i + 1
 
     return (math.sqrt(rmsd))
+
+def get_all_rr_distances(r1,r2):
+    dist_mat = []
+    for at1 in r1.get_atoms():
+        for at2 in r2.get_atoms():
+            if at1.serial_number < at2.serial_number:
+                dist_mat.append ([at1, at2, at1-at2])
+    return dist_mat
+
+def same_residue (at1,at2):
+    return at1.get_parent() == at2.get_parent()
+
+def same_model(r1,r2):
+    return r1.get_parent().get_parent() == r2.get_parent().get_parent()
+
+def same_chain(r1,r2):
+    return r1.get_parent() == r2.get_parent() and same_model(r1,r2)
+
+def seq_consecutive(r1,r2):
+    resnum1 = r1.id[1]
+    resnum2 = r2.id[1]
+    return same_chain(r1,r2) and abs(resnum1-resnum2) == 1
+    
+    

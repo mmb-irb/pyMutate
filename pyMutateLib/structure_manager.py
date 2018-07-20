@@ -130,3 +130,22 @@ class StructureManager():
         except OSError:
             print ("#ERROR: unable to save PDB data on " + output_path, file=sys.stderr)
 
+    def get_all_CA_distances(self):
+        dist_mat = []
+        # get CA Ats
+        ca_ats = []
+        for at in self.st.get_atoms():
+            if at.id == 'CA':
+                ca_ats.append(at)
+        for i in range(0, len(ca_ats)-1):
+            for j in range(i+1, len(ca_ats)):
+                dist_mat.append ([ca_ats[i], ca_ats[j], ca_ats[i]-ca_ats[j]])
+        return dist_mat
+    
+    def get_all_distances(self):
+        dist_mat = []
+        for at1 in self.st.get_atoms():
+            for at2 in self.st.get_atoms():
+                if at1.serial_number < at2.serial_number:
+                    dist_mat.append ([at1, at2, at1-at2])
+        return dist_mat
