@@ -1,5 +1,1 @@
-from pyMutateLib.cmd_line import CmdLine
-from pyMutateLib.structure_manager import StructureManager
-from pyMutateLib.mutation_manager import MutationManager
-from pyMutateLib.mutation_map import MutationMap
-from pyMutateLib.residue_lib import ResidueLib
+

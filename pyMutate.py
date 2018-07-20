@@ -11,7 +11,12 @@ __date__ = "$13-jul-2018 15:52:55$"
 import sys
 import os
 
-import pyMutateLib
+from pyMutateLib.cmd_line import CmdLine
+from pyMutateLib.residue_lib import ResidueLib
+from pyMutateLib.mutation_map import MutationMap
+from pyMutateLib.structure_manager import StructureManager
+from pyMutateLib.mutation_manager import MutationManager
+
 
 class pyMutate():
     def __init__(self, input_pdb_path, output_pdb_path, args):
@@ -28,18 +33,18 @@ class pyMutate():
             self.remove_H = 'mut'
 
 #load data
-        self.residue_lib = pyMutateLib.ResidueLib(self.resLib_path)
-        self.mutation_map = pyMutateLib.MutationMap(self.mutMap_path)
+        self.residue_lib = ResidueLib(self.resLib_path)
+        self.mutation_map = MutationMap(self.mutMap_path)
 
     def launch(self):
 
 # load structure ==============================================================
         print ("Loading structure from " + self.input_pdb_path)
-        pdbdata = pyMutateLib.StructureManager()
+        pdbdata = StructureManager()
         pdbdata.loadStructure(self.input_pdb_path, self.use_models, self.remove_H, self.debug)
 
 # Check and Do Mutations ================================================================
-        mutations = pyMutateLib.MutationManager(self.mutation_list, self.debug)
+        mutations = MutationManager(self.mutation_list, self.debug)
 
         mutations.prepareMutations(pdbdata.st, self.debug)
 
@@ -62,7 +67,7 @@ def main():
             'mutMap_path' : os.getenv('pyMUTATEDIR') + '/dat/pyMutateData.json'
         }
 
-    cmd_line = pyMutateLib.CmdLine(defaults)
+    cmd_line = CmdLine(defaults)
     args = cmd_line.parse_args()
 
     print ('==============================================')
@@ -70,7 +75,7 @@ def main():
     print ('             J.L Gelpi 2018')
     print ('==============================================')
 
-    pyMutateLib.CmdLine.printArgs(args)
+    CmdLine.printArgs(args)
 
     pyMutate(args.input_pdb_path, args.output_pdb_path, args).launch()
 
