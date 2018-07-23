@@ -74,6 +74,10 @@ def main():
     print ('     Simple side-chain mutation utility')
     print ('             J.L Gelpi 2018')
     print ('==============================================')
+    
+    #TEST
+    newres = Residue()
+    sys.exit()
 
     CmdLine.printArgs(args)
 

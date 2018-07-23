@@ -10,6 +10,7 @@ from Bio.PDB.PDBList import PDBList
 from Bio.PDB.PDBParser import PDBParser
 from Bio.PDB.MMCIFParser import MMCIFParser
 
+
 import pyMutateLib.util as util
 
 MODELS_MAXRMS = 5.0    # Threshold value to detect NMR models (angs)
@@ -149,3 +150,5 @@ class StructureManager():
                 if at1.serial_number < at2.serial_number:
                     dist_mat.append ([at1, at2, at1-at2])
         return dist_mat
+    
+
